@@ -6,6 +6,10 @@ definitions:
         type: string
       statusCode:
         type: integer
+      values:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   models.CreateStudentParams:
     properties:
@@ -58,11 +62,12 @@ paths:
     post:
       consumes:
       - application/json
-      description: Adds a new student with the provided details.
+      description: Add a new student to the database.
+      operationId: add-student
       parameters:
-      - description: Student details
+      - description: Student parameters
         in: body
-        name: student
+        name: studentParams
         required: true
         schema:
           $ref: '#/definitions/models.CreateStudentParams'
@@ -70,15 +75,15 @@ paths:
       - application/json
       responses:
         "201":
-          description: Successfully created student
+          description: Successful operation
           schema:
             $ref: '#/definitions/models.Student'
         "400":
           description: Invalid request body
           schema:
             $ref: '#/definitions/error.Http'
-        "500":
-          description: Internal server error
+        "422":
+          description: Invalid validation
           schema:
             $ref: '#/definitions/error.Http'
       summary: Add a new student
@@ -146,16 +151,17 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update details of a student identified by their ID.
+      description: Update a student's details by their ID.
+      operationId: update-student-by-id
       parameters:
       - description: Student ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated student details
+      - description: Student parameters
         in: body
-        name: student
+        name: studentParams
         required: true
         schema:
           $ref: '#/definitions/models.CreateStudentParams'
@@ -163,7 +169,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully updated student
+          description: updated user with id {id}
           schema:
             type: string
         "400":

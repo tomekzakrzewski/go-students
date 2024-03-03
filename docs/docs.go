@@ -47,7 +47,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Adds a new student with the provided details.",
+                "description": "Add a new student to the database.",
                 "consumes": [
                     "application/json"
                 ],
@@ -58,10 +58,11 @@ const docTemplate = `{
                     "students"
                 ],
                 "summary": "Add a new student",
+                "operationId": "add-student",
                 "parameters": [
                     {
-                        "description": "Student details",
-                        "name": "student",
+                        "description": "Student parameters",
+                        "name": "studentParams",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -71,7 +72,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Successfully created student",
+                        "description": "Successful operation",
                         "schema": {
                             "$ref": "#/definitions/models.Student"
                         }
@@ -82,8 +83,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/error.Http"
                         }
                     },
-                    "500": {
-                        "description": "Internal server error",
+                    "422": {
+                        "description": "Invalid validation",
                         "schema": {
                             "$ref": "#/definitions/error.Http"
                         }
@@ -136,7 +137,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update details of a student identified by their ID.",
+                "description": "Update a student's details by their ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -147,6 +148,7 @@ const docTemplate = `{
                     "students"
                 ],
                 "summary": "Update a student by ID",
+                "operationId": "update-student-by-id",
                 "parameters": [
                     {
                         "type": "integer",
@@ -156,8 +158,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Updated student details",
-                        "name": "student",
+                        "description": "Student parameters",
+                        "name": "studentParams",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -167,7 +169,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully updated student",
+                        "description": "updated user with id {id}",
                         "schema": {
                             "type": "string"
                         }
@@ -240,6 +242,12 @@ const docTemplate = `{
                 },
                 "statusCode": {
                     "type": "integer"
+                },
+                "values": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
