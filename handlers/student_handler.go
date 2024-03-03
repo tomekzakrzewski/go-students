@@ -24,14 +24,15 @@ func NewStudentHandler(studentStore *db.StudentStore) *StudentHandler {
 // HandleAddStudent adds a new student.
 //
 //	@Summary		Add a new student
-//	@Description	Adds a new student with the provided details.
+//	@Description	Add a new student to the database.
+//	@ID				add-student
 //	@Tags			students
 //	@Accept			json
 //	@Produce		json
-//	@Param			student	body		models.CreateStudentParams	true	"Student details"
-//	@Success		201		{object}	models.Student				"Successfully created student"
-//	@Failure		400		{object}	error.Http					"Invalid request body"
-//	@Failure		500		{object}	error.Http					"Internal server error"
+//	@Param			studentParams	body		models.CreateStudentParams	true	"Student parameters"
+//	@Success		201				{object}	models.Student				"Successful operation"
+//	@Failure		400				{object}	error.Http					"Invalid request body"
+//	@Failure		422				{object}	error.Http					"Invalid validation"
 //	@Router			/students [post]
 func (h *StudentHandler) HandleAddStudent(c *gin.Context) {
 	var studentParams models.CreateStudentParams
@@ -41,7 +42,7 @@ func (h *StudentHandler) HandleAddStudent(c *gin.Context) {
 	}
 	errors := studentParams.Validate()
 	if len(errors) > 0 {
-		c.JSON(http.StatusBadRequest, errors)
+		c.Error(error.InvalidValidation(errors))
 		return
 	}
 	student := models.NewStudentFromParams(&studentParams)
@@ -106,15 +107,16 @@ func (h *StudentHandler) HandleGetStudent(c *gin.Context) {
 // HandleUpdateStudent updates a student by ID.
 //
 //	@Summary		Update a student by ID
-//	@Description	Update details of a student identified by their ID.
+//	@Description	Update a student's details by their ID.
+//	@ID				update-student-by-id
 //	@Tags			students
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		int							true	"Student ID"
-//	@Param			student	body		models.CreateStudentParams	true	"Updated student details"
-//	@Success		200		{string}	string						"Successfully updated student"
-//	@Failure		400		{object}	error.Http					"Invalid ID or request body"
-//	@Failure		404		{object}	error.Http					"Student not found"
+//	@Param			id				path		int							true	"Student ID"
+//	@Param			studentParams	body		models.CreateStudentParams	true	"Student parameters"
+//	@Success		200				{string}	string						"updated user with id {id}"
+//	@Failure		400				{object}	error.Http					"Invalid ID or request body"
+//	@Failure		404				{object}	error.Http					"Student not found"
 //	@Router			/students/{id} [put]
 func (h *StudentHandler) HandleUpdateStudent(c *gin.Context) {
 	idString := c.Param("id")
@@ -123,10 +125,14 @@ func (h *StudentHandler) HandleUpdateStudent(c *gin.Context) {
 		c.Error(error.InvalidId())
 		return
 	}
-
 	var studentParams models.CreateStudentParams
 	if err := c.ShouldBindJSON(&studentParams); err != nil {
 		c.Error(error.InvalidRequestBody())
+		return
+	}
+	errors := studentParams.ValidateUpdate()
+	if len(errors) > 0 {
+		c.Error(error.InvalidValidation(errors))
 		return
 	}
 	student := models.NewStudentFromParams(&studentParams)
