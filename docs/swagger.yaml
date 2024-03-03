@@ -1,0 +1,180 @@
+basePath: /api
+definitions:
+  error.Http:
+    properties:
+      description:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  models.CreateStudentParams:
+    properties:
+      age:
+        type: integer
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+  models.Student:
+    properties:
+      age:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Student CRUD
+  title: Student CRUD
+  version: "1.0"
+paths:
+  /students:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of all students.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            items:
+              $ref: '#/definitions/models.Student'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.Http'
+      summary: Retrieve all students
+      tags:
+      - students
+    post:
+      consumes:
+      - application/json
+      description: Adds a new student with the provided details.
+      parameters:
+      - description: Student details
+        in: body
+        name: student
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateStudentParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created student
+          schema:
+            $ref: '#/definitions/models.Student'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/error.Http'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/error.Http'
+      summary: Add a new student
+      tags:
+      - students
+  /students/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a student identified by their ID.
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/error.Http'
+        "404":
+          description: Student not found
+          schema:
+            $ref: '#/definitions/error.Http'
+      summary: Delete a student by ID
+      tags:
+      - students
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a student's details by their ID.
+      operationId: get-student-by-id
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.Student'
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/error.Http'
+        "404":
+          description: Student not found
+          schema:
+            $ref: '#/definitions/error.Http'
+      summary: Retrieve a student by ID
+      tags:
+      - students
+    put:
+      consumes:
+      - application/json
+      description: Update details of a student identified by their ID.
+      parameters:
+      - description: Student ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated student details
+        in: body
+        name: student
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateStudentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated student
+          schema:
+            type: string
+        "400":
+          description: Invalid ID or request body
+          schema:
+            $ref: '#/definitions/error.Http'
+        "404":
+          description: Student not found
+          schema:
+            $ref: '#/definitions/error.Http'
+      summary: Update a student by ID
+      tags:
+      - students
+swagger: "2.0"
